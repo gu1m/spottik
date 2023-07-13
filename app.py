@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 import seaborn as sns
 import numpy as np
 
-df1 = pd.read_csv("C:\\Users\\gguim\\OneDrive\\Desktop\\appdata\\tiktok.csv")
-df2 = pd.read_csv("C:\\Users\\gguim\\OneDrive\\Desktop\\appdata\\spotify.csv")
+df1 = pd.read_csv("tiktok.csv")
+df2 = pd.read_csv("spotify.csv")
 
 df1 = df1.drop(["date","platform_name","platform_song_id","product_code","album","label_name","sublabel","territory","creations","favorites"], axis=1)
 df2 = df2.drop(["free_saves","premium_saves","playlists_algorithmics","date","date_release","album__code","n_discovery_flag","y_discovery_flag","y_streams_offline",
