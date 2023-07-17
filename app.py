@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 import seaborn as sns
 import numpy as np
 
-df1 = pd.read_csv("tiktok.csv")
-df2 = pd.read_csv("spotify.csv")
+df1 = pd.read_csv("C:\\Users\\gguim\\OneDrive\\Desktop\\finn\\tiktok.csv")
+df2 = pd.read_csv("C:\\Users\\gguim\\OneDrive\\Desktop\\finn\\spotify.csv")
 
 df1 = df1.drop(["date","platform_name","platform_song_id","product_code","album","label_name","sublabel","territory","creations","favorites"], axis=1)
 df2 = df2.drop(["free_saves","premium_saves","playlists_algorithmics","date","date_release","album__code","n_discovery_flag","y_discovery_flag","y_streams_offline",
@@ -46,7 +46,7 @@ st.header("Dataframe Spotify/Tiktok")
 st.markdown("""---""")
 
 # configurações da barra lateral
-opcoes = ["Tiktok","Spotify","Tiktok/Spotify"]
+opcoes = ["Tiktok","Spotify","individual","Tiktok/Spotify"]
 indi_geral = st.sidebar.selectbox("Escolha quais dados serão analisados", opcoes)
 
 if indi_geral == "Tiktok":
@@ -329,6 +329,177 @@ elif indi_geral == "Tiktok/Spotify":
     
     corr = df.corr(numeric_only=True)
     st.write(corr)
+
+elif indi_geral == "individual":
+
+    # vendo o total de músicas no Dataframe
+    total_musicas = len(df["isrc"])
+
+    # analisando o total de artistas no Dataframe
+    data = df.drop_duplicates(subset="artist", keep='first')
+    total_artistas = len(data["artist"])
+
+    col1,col2,col3 = st.columns(3)
+
+    col1.metric("Total de músicas", total_musicas)
+    col3.metric("Número de artistas", total_artistas)
+
+    st.subheader("""Amostra de Dados""")
+    st.write(df1.head())
+    st.markdown("---")
+
+    # colocando area de digitação para o usuario digitar a musica ou o artista para ser analisado
+    keyword = st.text_input("Digite o nome de um ISRC")
+    clicado = st.button("search")
+    st.markdown("""---""")
+
+    if keyword is not None and len(str(keyword)) > 0:
+        # se o usuario escolher para analisar musica
+        dado = df.loc[df["isrc"].isin ([keyword])]  
+        # se o usuario escolher para analisar artista
+
+        st.header("Dados Individuais da Música Selecionado")
+
+
+        # se o dado não for encontrado aparecerá a mensagem abaixo
+        if dado.empty:
+            st.subheader("Música não catalogada")
+        
+         # se o dado for encontrado irá proceder o algoritmo abaixo
+        else:
+            
+            # encontrando o Artista no Dataframe
+            dado = df.loc[df["isrc"].isin ([keyword])]
+
+            # vendo o total de músicas que o Artista tem
+            total_art_mus = len(dado["isrc"])
+                    
+            
+            # amostra de dados do artista
+            st.write(dado)
+
+            # analisando a media de likes do artista
+            media_likes = sts.mean(dado["likes"])
+            col000,col001 = st.columns(2)
+            col001.metric("Número de likes desta música é:", round(media_likes,2))
+            col000.metric("Total de músicas com este ISRC",total_art_mus)
+
+            media_streams = round(sts.mean(dado["streams"]),2)
+            media_lister = round(sts.mean(dado["listeners"]),2)
+            media_shares = round(sts.mean(dado["shares"]),2)
+            moda_genre = sts.mode(dado["platform_classified_genre"])
+            moda_content = sts.mode(dado["content_type"])
+            media_views = sts.mean(dado["video_views"])
+
+            col34,col35,col36 = st.columns(3)
+
+            col34.metric("número de streams", media_streams)
+            col35.metric("número de ouvintes", media_lister)
+            col36.metric("número de compartilhamentos",media_shares)
+
+            col37,col38,col39 = st.columns(3)
+
+            col37.metric("moda do gênero músical",moda_genre)
+            col38.metric("moda do contente_type",moda_content)
+            col39.metric("total de views da música", media_views)
+    
+    st.markdown("""---""")
+    
+    # colocando area de digitação para o usuario digitar a musica ou o artista para ser analisado
+    keyword2 = st.text_input("Digite o nome de um Artista")
+    clicado2 = st.button("search ")
+    st.markdown("""---""")
+
+    if keyword2 is not None and len(str(keyword2)) > 0:
+        # se o usuario escolher para analisar musica
+        dado = df.loc[df["artist"].isin ([keyword2])]  
+        # se o usuario escolher para analisar artista
+
+        st.header("Dados Individuais do Artista Selecionado")
+
+
+        # se o dado não for encontrado aparecerá a mensagem abaixo
+        if dado.empty:
+            st.subheader("Cantor não catalogado")
+        
+         # se o dado for encontrado irá proceder o algoritmo abaixo
+        else:
+            
+            # encontrando o Artista no Dataframe
+    
+
+            # vendo o total de músicas que o Artista tem
+            total_art_mus = len(dado["artist"]) 
+                    
+            
+            # amostra de dados do artista
+            st.write(dado)
+
+            # analisando a media de likes do artista
+            media_likes = round(sts.mean(dado["likes"]),2)
+            col000,col001 = st.columns(2)
+            col001.metric("Média de likes desta música é:", round(media_likes,2))
+            col000.metric("Total de músicas do artista",total_art_mus)
+
+            media_streams = round(sts.mean(dado["streams"]),2)
+            media_lister = round(sts.mean(dado["listeners"]),2)
+            media_shares = round(sts.mean(dado["shares"]),2)
+            moda_genre = sts.mode(dado["platform_classified_genre"])
+            moda_content = sts.mode(dado["content_type"])
+            media_views = round(sts.mean(dado["video_views"]),2)
+
+            col34,col35,col36 = st.columns(3)
+
+            col34.metric("média de streams", media_streams)
+            col35.metric("média de ouvintes", media_lister)
+            col36.metric("média de compartilhamentos",media_shares)
+
+            col37,col38,col39 = st.columns(3)
+
+            col37.metric("moda do gênero músical",moda_genre)
+            col38.metric("moda do contente_type",moda_content)
+            col39.metric("média de views das músicas", media_views)
+
+            st.subheader("Gráficos da música pesquisada")
+
+            col40, col41 = st.columns(2)
+
+            with col40:
+                fig = go.Box(y=dado.video_views ,name="Tiktok", marker=dict(color="#bd3737"))
+                fig2 = go.Box(y=dado.streams ,name="Spotify", marker=dict(color="#98c3a1"))
+                data = [fig,fig2]
+                layout = go.Layout(title="Número de músicas em relação a visibilidade da música nas plataformas")
+                figure = go.Figure(data = data, layout=layout)
+                figure.update_layout(
+                    xaxis_title="número de músicas",
+                    yaxis_title="visibilidade"
+                )
+                st.write(figure)
+            
+            with col41:
+                fig = go.Scatter(x=dado.streams,y=dado.video_views, mode="markers",name="Tiktok", marker=dict(color="#bd3737"))
+                data=[fig]
+                layout = go.Layout(title="Comparando a visibilidade nas duas plataformas")
+                figure = go.Figure(data=data, layout=layout)
+                figure.update_layout(
+                    xaxis_title="streams",
+                    yaxis_title="video_views"
+                )
+                st.write(figure)
+            
+            corr = dado.corr(numeric_only=True)
+            st.write(corr)
+
+
+
+
+
+            
+
+
+
+            
+
     
 
 
